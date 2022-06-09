@@ -29,7 +29,7 @@ class CadUser extends Component {
         const { name, email,telefone, senha } = this.state;
         if(!this.validate()) return;
         this.props.postUser({name, email,telefone, senha}, (err) =>{
-            if(err.erro.status == "error"){
+            if(err.erro.status === "error"){
                 this.setState({erro: {message: err.erro.message}});
                 this.setState({success: ""});
                 console.log(err.erro.status);
@@ -42,7 +42,7 @@ class CadUser extends Component {
     }
 
     validate(){
-        const { name, email,telefone, senha } = this.state;
+        const { name, email, senha } = this.state;
         if(!name) return this.setState({erro:{message: "Preencha o campo nome"}});
         if(!email) return this.setState({erro:{message: "Preencha o campo email"}});
         if(!validator.isEmail(email)) return this.setState({erro:{message: "Preencha com email valido"}});

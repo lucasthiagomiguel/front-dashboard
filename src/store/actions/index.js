@@ -17,25 +17,7 @@ export const handleLogin = ({ email, senha }, callback) => {
     }
 }
 
-export const getUser = (pageAtual) => {
-    return function (dispatch) {
-        if (getToken()) {
-            axios.get(api + `/star/${pageAtual}`, getHeaders())
-                .then((response) => {
-                    console.log(response.data);
-                    saveToke(response.data);
-                    dispatch({ type: LOGIN_USER, payload: response.data });
-                })
-                .catch((err) => {
-                    dispatch({ type: LOGOUT_USER });
-                    cleanToken();
-                })
-        } else {
-            dispatch({ type: LOGOUT_USER });
-            cleanToken();
-        }
-    }
-}
+
 
 export const handleLogout = () => {
     cleanToken();

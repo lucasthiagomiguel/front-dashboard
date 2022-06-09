@@ -1,52 +1,39 @@
-import React from 'react';
+import Graphiics from "../../components/pizzaGraphic";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import * as actions from '../../store/actions/dashboard';
 
-export default function Dashboard() {
-    return (
-        <>
-            <div className="d-flex">
-                <div className="mr-auto p-2">
-                    <h2 className="display-4 titulo">Dashboard</h2>
-                </div>
-            </div>
-            <hr />
-            <div className="row mb-3">
-                <div className="col-lg-3 col-sm-6">
-                    <div className="card bg-success text-white">
-                        <div className="card-body">
-                            <i className="fas fa-users fa-3x"></i>
-                            <h6 className="card-title">Usuários</h6>
-                            <h2 className="lead">147</h2>
-                        </div>
-                    </div>
-                </div>
-                <div className="col-lg-3 col-sm-6">
-                    <div className="card bg-danger text-white">
-                        <div className="card-body">
-                            <i className="fas fa-file fa-3x"></i>
-                            <h6 className="card-title">Artigos</h6>
-                            <h2 className="lead">63</h2>
-                        </div>
-                    </div>
-                </div>
-                <div className="col-lg-3 col-sm-6">
-                    <div className="card bg-warning text-white">
-                        <div className="card-body">
-                            <i className="fas fa-eye fa-3x"></i>
-                            <h6 className="card-title">Visitas</h6>
-                            <h2 className="lead">648</h2>
-                        </div>
-                    </div>
-                </div>
-                <div className="col-lg-3 col-sm-6">
-                    <div className="card bg-info text-white">
-                        <div className="card-body">
-                            <i className="fas fa-comments fa-3x"></i>
-                            <h6 className="card-title">Comentários</h6>
-                            <h2 className="lead">17</h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </>
-    );
+
+ class Dashboard extends Component {
+    componentDidMount() {
+      this.getDashboard();
+     
+        
+    };
+    getDashboard(){
+        
+        this.props.getDash();
+        const {dashboard} = this.props;
+        if (dashboard === "undefined") return null;
+    }
+
+    componentDidUpdate(nextProps) {
+        if (!this.props.teste && nextProps.teste) this.getDadosDashboard();
+    }
+
+    
+    render(){
+        var dashboard = [];
+        if (this.props.dashboard) dashboard = this.props.dashboard
+        return (
+            <>
+                <Graphiics dados = {dashboard}/>
+            </>
+        );
+    }
 }
+const mapStateToProps = state => ({
+    dashboard: state.dash.dashboard,
+    
+})
+export default connect(mapStateToProps, actions)(Dashboard);

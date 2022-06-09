@@ -1,6 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../store/actions/users';
+import { Link } from 'react-router-dom';
+import {  UncontrolledButtonDropdown, DropdownMenu, DropdownItem, DropdownToggle } from 'reactstrap';
+
+
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+library.add(fas);
+
 
 class User extends Component {
 
@@ -18,8 +27,8 @@ class User extends Component {
     }
 
     getUsuarios() {
-        const { pageAtual } = this.state;
-        this.props.getUsers(pageAtual);
+       
+        this.props.getUsers();
         const { usuarios } = this.props;
         if (usuarios === "undefined") return null;
     }
@@ -32,7 +41,7 @@ class User extends Component {
 
     render() {
         var usuarios = [];
-        if (this.props.usuarios) usuarios = this.props.usuarios.message.results
+        if (this.props.usuarios) usuarios = this.props.usuarios
         
 
         
@@ -45,22 +54,67 @@ class User extends Component {
                     </div>
                 </div><hr />
                 <div className="row mb-3">
-                    {usuarios.map(starWars => (
-                    <div className="col-lg-3 col-sm-6 mb-3" key={starWars.height + 1}>
-                        <div className="card bg-success text-white">
-                            <div className="card-body">
-                                <i className="fas fa-users fa-3x"></i>
-                                <h6 className="card-title">{starWars.name}</h6>
-                                <h2 className="lead">mass:{starWars.mass}</h2>
-                                <h2 className="lead">gender:{starWars.gender}</h2>
-                                <h2 className="lead">hair_color:{starWars.hair_color}</h2>
-                                <h2 className="lead">height:{starWars.height}</h2>
-                                <h2 className="lead">birth_year:{starWars.birth_year}</h2>
-                                <h2 className="lead">skin_color:{starWars.skin_color}</h2>
-                            </div>
-                        </div>
+                    <div className="table-responsive">
+                        <table className="table table-striped table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th className="d-none d-sm-table-cell">ID</th>
+                                    <th>Nome</th>
+                                    <th className="d-none d-sm-table-cell">name_fazenda</th>
+                                    <th className="d-none d-sm-table-cell">cpf_cnpj</th>
+                                    <th className="d-none d-sm-table-cell">testess</th>
+                                    <th className="d-none d-sm-table-cell">hectares</th>
+                                    <th className="d-none d-sm-table-cell">area_agricultavel</th>
+                                    <th className="d-none d-sm-table-cell">area_vegetacao</th>
+                                    <th className="text-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {usuarios.map(producers => (
+                                    <tr key={producers.id}>
+                                        <td className="d-none d-sm-table-cell">{producers.id}</td>
+                                        <td>{producers.name}</td>
+                                        <td className="d-none d-sm-table-cell">{producers.name_fazenda}</td>
+                                        <td className="d-none d-sm-table-cell">{producers.cpf_cnpj}</td>
+                                        <td className="d-none d-sm-table-cell">{producers.testess}</td>
+                                        <td className="d-none d-sm-table-cell">{producers.hectares}</td>
+                                        <td className="d-none d-sm-table-cell">{producers.area_agricultavel}</td>
+                                        <td className="d-none d-sm-table-cell">{producers.area_vegetacao}</td>
+                                        <td className="text-center">
+                                            <span className="d-none d-md-block">
+                                                <Link to={"/view-user/" + producers.id}>
+                                                    <button className="btn btn-outline-primary btn-sm mr-1">
+                                                        <FontAwesomeIcon icon="eye" />
+                                                    </button>
+                                                </Link>
+
+                                                <Link to={"/update-user/" + producers.id}>
+                                                    <button className="btn btn-outline-warning btn-sm mr-1">
+                                                        <FontAwesomeIcon icon="edit" />
+                                                    </button>
+                                                </Link>
+
+                                                <span onClick={() => this.openModal(producers.id)}>
+                                                </span>
+                                            </span>
+                                            <div className="dropdown d-block d-md-none">
+                                                <UncontrolledButtonDropdown>
+                                                    <DropdownToggle outline color="primary" size="sm" caret>
+                                                        Ações
+                                                    </DropdownToggle>
+                                                    <DropdownMenu>
+                                                        <Link className="dropdown-item" to={"/view-user/" + producers.id}>Visualizar</Link>
+                                                        <Link className="dropdown-item" to={"/update-user/" + producers.id}>Editar</Link>
+                                                        <DropdownItem onClick={() => this.openModal(producers.id)}>Apagar</DropdownItem>
+                                                    </DropdownMenu>
+                                                </UncontrolledButtonDropdown>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
-                    ))}
                 </div>
 
                 <nav aria-label="paginacao">
