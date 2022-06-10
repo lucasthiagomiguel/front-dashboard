@@ -17,6 +17,8 @@ library.add(fas);
 class User extends Component {
 
     state = {
+        msg: "",
+        erro: "",
         success: "",
         loading: false,
         openModal: false,
@@ -39,14 +41,42 @@ class User extends Component {
         if (usuarios === "undefined") return null;
     }
 
-    changePageAtual = (pageAtual) => {
-        this.setState({pageAtual}, () => {
-            this.getUsuarios();
+    // changePageAtual = (pageAtual) => {
+    //     this.setState({pageAtual}, () => {
+    //         this.getUsuarios();
+    //     })
+    // }
+    apagarUser() {
+        this.setState({ dadosApi: false });
+        this.setState({ loading: true });
+        this.props.deleteUser(this.state.id_delete, (err) => {
+            if (err.erro.status === "error") {
+             
+                this.setState({ erro: { message: err.erro.message } });
+                this.setState({ loading: false });
+                this.props.limparUsers();
+                this.setState({ openModal: false });
+            } else {
+                this.setState({ success: 'Apagadoo como sucesso' });
+                this.setState({ loading: false });
+                this.getUsuarios();
+                //this.setState({formSuccess: true});
+                this.setState({ openModal: false });
+            }
         })
     }
 
+    openModal(id) {
+        this.setState({ id_delete: id });
+        this.setState({ openModal: true });
+    }
+
+    closeModal() {
+        this.setState({ openModal: false });
+    }
+
     render() {
-        const { msg, loading, erro, success, openModal, dadosApi } = this.state;
+        const { msg, loading, erro, success, openModal } = this.state;
         var usuarios = [];
         if (this.props.usuarios) usuarios = this.props.usuarios
         
@@ -142,7 +172,7 @@ class User extends Component {
                     </div>
                 </div>
 
-                <nav aria-label="paginacao">
+                {/* <nav aria-label="paginacao">
                     <ul className="pagination pagination-sm justify-content-center">
                         
                         <li>
@@ -161,7 +191,7 @@ class User extends Component {
                             <span className="page-link" onClick={() => this.changePageAtual(5)}>5</span>
                         </li>
                     </ul>
-                </nav>
+                </nav> */}
 
             </>
         )
