@@ -9,11 +9,12 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, UncontrolledButtonD
 import DetailsUser from './DetailsUser';
 import AlertSuccess from '../../components/AlertSuccess';
 import AlertDanger from '../../components/AlertDanger';
+import SpinnerDeleteSimples from '../../components/SpinnerDeleteSimples';
 
 class Viewuser extends Component {
 
     state = {
-        _id: "",
+        id: "",
         msg: "",
         erro: "",
         success: "",
@@ -24,7 +25,7 @@ class Viewuser extends Component {
 
     componentDidMount() {
         const { id } = this.props.match.params;
-        this.setState({ _id: id });
+        this.setState({ id: id });
         this.getUsuario(id);
     }
 
@@ -46,16 +47,19 @@ class Viewuser extends Component {
 
     apagarUser() {
         this.setState({ loading: true });
-        const { _id } = this.state;
-        this.props.deleteUser(_id, (msg) => {
-            if (msg.erro.error) {
-                this.setState({ erro: { message: msg.erro.message } });
+        const { id } = this.state;
+        this.props.deleteUser(id, (err) => {
+            if (err.erro.status === "error") {
+                this.setState({ erro: { message: err.erro.message } });
+                this.setState({ success: "" });
                 this.setState({ loading: false });
             } else {
-                this.setState({ success: { message: msg.erro.message } });
-                this.setState({ loading: false });
+                this.setState({ success: "cadastrado com sucesso!"  });
+                this.setState({ erro: "" });
                 this.setState({ formSuccess: true });
+                this.setState({ loading: false });
             }
+            console.log(err)
         })
     }
 
@@ -87,7 +91,7 @@ class Viewuser extends Component {
                     <ModalFooter>
                         <Button outline color="primary" size="sm" onClick={() => this.closeModal()}>Cancelar</Button>
                         <span onClick={() => this.apagarUser()}>
-                            
+                            <SpinnerDeleteSimples loading={loading} />
                         </span>
                     </ModalFooter>
                 </Modal>
@@ -108,9 +112,10 @@ class Viewuser extends Component {
                                 Editar
                         </button>
                         </Link>
+                        
 
-                        <span onClick={() => this.openModal()}>
-                           
+                        <span onClick={() => this.apagarUser()}>
+                            <SpinnerDeleteSimples loading={loading} />
                         </span>
                     </span>
                     <div className="dropdown d-block d-md-none">
@@ -121,7 +126,6 @@ class Viewuser extends Component {
                             <DropdownMenu right>
                                 <Link className="dropdown-item" to={"/user"}>Listar</Link>
                                 <Link className="dropdown-item" to={"/update-user/" + this.props.match.params.id}>Editar</Link>
-                                <Link className="dropdown-item" to={"/update-user-senha/" + this.props.match.params.id}>Editar Senha</Link>
                                 <DropdownItem onClick={() => this.openModal()}>Apagar</DropdownItem>
                             </DropdownMenu>
                         </UncontrolledButtonDropdown>

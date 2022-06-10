@@ -2,8 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../store/actions/users';
 import { Link } from 'react-router-dom';
-import {  UncontrolledButtonDropdown, DropdownMenu, DropdownItem, DropdownToggle } from 'reactstrap';
-
+import {  UncontrolledButtonDropdown, DropdownMenu, DropdownItem, DropdownToggle, Modal,ModalHeader,ModalBody ,ModalFooter,Button} from 'reactstrap';
+import SpinnerDelete from '../../components/SpinnerDelete';
+import AlertSuccess from '../../components/AlertSuccess';
+import AlertDanger from '../../components/AlertDanger';
+import SpinnerDeleteSimples from '../../components/SpinnerDeleteSimples';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -14,8 +17,11 @@ library.add(fas);
 class User extends Component {
 
     state = {
-        pageAtual: 1,
-        //limit: 40,
+        success: "",
+        loading: false,
+        openModal: false,
+        id_delete: "",
+        dadosApi: false
     }
 
     componentDidMount() {
@@ -40,6 +46,7 @@ class User extends Component {
     }
 
     render() {
+        const { msg, loading, erro, success, openModal, dadosApi } = this.state;
         var usuarios = [];
         if (this.props.usuarios) usuarios = this.props.usuarios
         
@@ -48,11 +55,26 @@ class User extends Component {
         
         return (
             <>
+                <Modal isOpen={openModal}>
+                    <ModalHeader className="bg-danger text-white">Confirmar</ModalHeader>
+                    <ModalBody>
+                        Você realmente deseja apagar esse usuário?
+                     </ModalBody>
+                    <ModalFooter>
+                        <Button outline color="primary" size="sm" onClick={() => this.closeModal()}>Cancelar</Button>
+                        <span onClick={() => this.apagarUser()}>
+                            <SpinnerDeleteSimples loading={loading} />
+                        </span>
+                    </ModalFooter>
+                </Modal>
                 <div className="d-flex">
                     <div className="mr-auto p-2">
                         <h2 className="display-4 titulo">Listar Usuários</h2>
                     </div>
                 </div><hr />
+                {msg ? <AlertSuccess erros={{ message: msg }} /> : ""}
+                <AlertDanger erros={erro} />
+                <AlertSuccess erros={success} />
                 <div className="row mb-3">
                     <div className="table-responsive">
                         <table className="table table-striped table-hover table-bordered">
@@ -95,6 +117,9 @@ class User extends Component {
                                                 </Link>
 
                                                 <span onClick={() => this.openModal(producers.id)}>
+                                                </span>
+                                                <span onClick={() => this.openModal(producers.id)}>
+                                                    <SpinnerDelete loading={loading} />
                                                 </span>
                                             </span>
                                             <div className="dropdown d-block d-md-none">

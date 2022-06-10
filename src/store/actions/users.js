@@ -25,7 +25,7 @@ export const getUsers = () => {
     }
 export const postUser = (cadUser, callback) => {
     return function (dispatch){
-        console.log(cadUser);
+        
         axios.post(api + `/producers`, cadUser)
         .then((response) => {
             callback({erro: response.data});
@@ -34,9 +34,20 @@ export const postUser = (cadUser, callback) => {
     }
 }
 
-export const putUser = (dadosUser, callback) => {
+export const putUser = (id,dadosUser, callback) => {
     return function (dispatch) {
-        axios.put(api + `/producers`, dadosUser, getHeaders())
+        console.log(id);
+        axios.put(api + `/producers/${id}`, dadosUser, getHeaders())
+            .then((response) => {
+                callback({ erro: response.data });
+            })
+            .catch((err) => callback(errorHandling(err)));
+    }
+}
+
+export const deleteUser = (id, callback) => {
+    return function (dispatch) {
+        axios.delete(api + `/producers/${id}`, getHeaders())
             .then((response) => {
                 callback({ erro: response.data });
             })

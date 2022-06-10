@@ -4,7 +4,7 @@ import { Link, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as actions from '../../store/actions/users';
 
-import { Form, FormGroup, Label, Input, Button, Modal, ModalHeader, ModalBody, ModalFooter, UncontrolledButtonDropdown, DropdownMenu, DropdownItem, DropdownToggle } from 'reactstrap';
+import { Form, Label, Input, Button, Modal, ModalHeader, ModalBody, ModalFooter, UncontrolledButtonDropdown, DropdownMenu, DropdownItem, DropdownToggle,Row,Col } from 'reactstrap';
 import SpinnerUp from '../../components/SpinnerUp';
 import SpinnerDeleteSimples from '../../components/SpinnerDeleteSimples';
 import validator from 'validator';
@@ -26,7 +26,9 @@ class UpdateUser extends Component {
         erro: "",
         loading: false,
         dadosApi:false,
-        openModal: false
+        openModal: false,
+        formSuccess: false,
+        deleteSuccess: false,
     }
 
     componentDidMount() {
@@ -41,16 +43,24 @@ class UpdateUser extends Component {
     }
 
     componentWillUnmount() {
-        this.props.limparUser();
+        //this.props.limparUser();
     }
 
     receberDadosApi() {
-        const { id } = this.props.match.params;
-        if (typeof this.props.userDetails !== "undefined" && this.props.userDetails !== null && this.props.userDetails.id === id && !this.state.dadosApi) {
+        
+        
+        if (!this.state.dadosApi) {
             this.setState({ id: this.props.userDetails.id });
             this.setState({ name: this.props.userDetails.name });
-            this.setState({ email: this.props.userDetails.email });
+            this.setState({ name_fazenda: this.props.userDetails.name_fazenda });
+            this.setState({ cpf_cnpj: this.props.userDetails.cpf_cnpj });
+            this.setState({ hectares: this.props.userDetails.hectares });
+            this.setState({ estado: this.props.userDetails.estado });
+            this.setState({ area_agricultavel: this.props.userDetails.area_agricultavel });
+            this.setState({ area_vegetacao: this.props.userDetails.area_vegetacao });
+            this.setState({ plantacao: this.props.userDetails.plantacao });
             this.setState({ dadosApi: true });
+            
         }
     }
 
@@ -69,15 +79,15 @@ class UpdateUser extends Component {
         this.setState({ loading: true });
 
         const {id, name, name_fazenda, cpf_cnpj,estado,hectares,area_agricultavel,area_vegetacao,plantacao } = this.state;
-
-        this.props.putUser({ id, name, name_fazenda, cpf_cnpj,estado,hectares,area_agricultavel,area_vegetacao,plantacao }, (err) => {
+        alert(id)
+        this.props.putUser(id,{  name, name_fazenda, cpf_cnpj,estado,hectares,area_agricultavel,area_vegetacao,plantacao }, (err) => {
             if (err.erro.status === "error") {
                 this.setState({ erro: { message: err.erro.message} });
                 this.setState({ loading: false });
             } else {
                 this.setState({ success: "atualizado com sucesso!"  });
                 this.setState({ loading: false });
-                this.setState({ deleteSuccess: true });
+                this.setState({ formSuccess: true });
             }
         })
 
@@ -86,7 +96,6 @@ class UpdateUser extends Component {
     receberDadosForm() {
         this.setState({ id: document.querySelector("#id").value });
         this.setState({ name: document.querySelector("#name").value });
-        this.setState({ email: document.querySelector("#email").value });
     }
 
     validade() {
@@ -113,6 +122,7 @@ class UpdateUser extends Component {
                 this.setState({ success: "apagado com sucesso!"  });
                 this.setState({ loading: false });
                 this.setState({ deleteSuccess: true });
+                this.setState({ deleteSuccess: true });
             }
         })
     }
@@ -126,21 +136,21 @@ class UpdateUser extends Component {
     }
 
     render() {
-        const {id, name, name_fazenda, cpf_cnpj,estado,hectares,area_agricultavel,area_vegetacao,plantacao, erro, success, loading ,dadosApi,openModal} = this.state;
+        const {id, name, name_fazenda, cpf_cnpj,estado,hectares,area_agricultavel,area_vegetacao,plantacao, erro, success, loading ,dadosApi,openModal,formSuccess,deleteSuccess} = this.state;
 
-        // if (formSuccess) {
-        //     return <Redirect to={{
-        //         //pathname: '/user',
-        //         pathname: '/view-user/' + id,
-        //         state: { msg: 'Usuário editado com sucesso!' }
-        //     }} />
-        // }
-        // if (deleteSuccess) {
-        //     return <Redirect to={{
-        //         pathname: '/user',
-        //         state: { msg: 'Usuário apagado com sucesso!' }
-        //     }} />
-        // }
+        if (formSuccess) {
+            return <Redirect to={{
+                //pathname: '/user',
+                pathname: '/view-user/' + id,
+                state: { msg: 'Usuário editado com sucesso!' }
+            }} />
+        }
+        if (deleteSuccess) {
+            return <Redirect to={{
+                pathname: '/user',
+                state: { msg: 'Usuário apagado com sucesso!' }
+            }} />
+        }
 
         return (
             <>
@@ -194,43 +204,124 @@ class UpdateUser extends Component {
                 <AlertDanger erros={erro} />
                 <AlertSuccess erros={success} />
                 <Form>
-                    <Input type="hidden"
-                        value={id}
-                        name="id"
-                        id="id"
-                    />
-
-                    <FormGroup>
-                        <Label for="name">Nome</Label>
-                        <Input type="text"
-                            value={name}
-                            name="name"
-                            id="name"
-                            className="form-control"
-                            placeholder={dadosApi ? "Nome completo do usuário" : "Carregado..."}
-                            disabled={dadosApi ? false : true}
-                            autoComplete="name"
-                            onChange={(ev) => this.onChangeInput("name", ev)}
+                    <Row form>
+                        <Input type="hidden"
+                            value={id}
+                            name="id"
+                            id="id"
                         />
-                    </FormGroup>
+                        <Col md={6}>
+                            <Label for="name">Nome</Label>
+                            <Input type="text"
+                                value={name}
+                                name="name"
+                                id="name"
+                                className="form-control"
+                                placeholder={dadosApi ? "Nome produtor" : "Carregado..."}
+                                disabled={dadosApi ? false : true}
+                                autoComplete="name"
+                                onChange={(ev) => this.onChangeInput("name", ev)}
+                            />
+                        </Col>
+                        <Col md={6}>
+                            <Label for="name_fazenda">Nome fazenda</Label>
+                            <Input type="text"
+                                value={name_fazenda}
+                                name="name_fazenda"
+                                id="name_fazenda"
+                                className="form-control"
+                                placeholder={dadosApi ? "name fazenda" : "Carregado..."}
+                                disabled={dadosApi ? false : true}
+                                autoComplete="name_fazenda"
+                                onChange={(ev) => this.onChangeInput("name_fazenda", ev)}
+                            />
+                        </Col>
+                        <Col md={6}>
+                            <Label for="cpf_cnpj">cpf/cnpj</Label>
+                            <Input type="text"
+                                value={cpf_cnpj}
+                                name="cpf_cnpj"
+                                id="cpf_cnpj"
+                                className="form-control"
+                                placeholder={dadosApi ? "cpf/cnpj" : "Carregado..."}
+                                disabled={dadosApi ? false : true}
+                                autoComplete="cpf_cnpj"
+                                onChange={(ev) => this.onChangeInput("cpf_cnpj", ev)}
+                            />
+                        </Col>
+                        <Col md={6}>
+                            <Label for="estado">Estado</Label>
+                            <Input type="text"
+                                value={estado}
+                                name="estado"
+                                id="estado"
+                                className="form-control"
+                                placeholder={dadosApi ? "Estado" : "Carregado..."}
+                                disabled={dadosApi ? false : true}
+                                autoComplete="estado"
+                                onChange={(ev) => this.onChangeInput("estado", ev)}
+                            />
+                        </Col>
+                        <Col md={6}>
+                                <Label for="hectares">Hectares</Label>
+                                <Input type="number"
+                                    value={hectares}
+                                    name="hectares"
+                                    id="hectares"
+                                    className="form-control"
+                                    placeholder={dadosApi ? "Hectares" : "Carregado..."}
+                                    disabled={dadosApi ? false : true}
+                                    autoComplete="hectares"
+                                    onChange={(ev) => this.onChangeInput("hectares", ev)}
+                                />
+                        </Col>
+                        <Col md={6}>
+                            <Label for="area_agricultavel">Area agricultavel</Label>
+                            <Input type="text"
+                                value={area_agricultavel}
+                                name="area_agricultavel"
+                                id="area_agricultavel"
+                                className="form-control"
+                                placeholder={dadosApi ? "Area agricultavel" : "Carregado..."}
+                                disabled={dadosApi ? false : true}
+                                autoComplete="area_agricultavel"
+                                onChange={(ev) => this.onChangeInput("area_agricultavel", ev)}
+                            />
+                        </Col>
+                        <Col md={6}>
+                            <Label for="area_vegetacao">area vegetacao</Label>
+                            <Input type="text"
+                                value={area_vegetacao}
+                                name="area_vegetacao"
+                                id="area_vegetacao"
+                                className="form-control"
+                                placeholder={dadosApi ? "area_vegetacao" : "Carregado..."}
+                                disabled={dadosApi ? false : true}
+                                autoComplete="area_vegetacao"
+                                onChange={(ev) => this.onChangeInput("area_vegetacao", ev)}
+                            />
+                        </Col>
+                        <Col md={6}>
+                            <Label for="plantacao">Plantacao</Label>
+                            <Input type="text"
+                                value={plantacao}
+                                name="plantacao"
+                                id="plantacao"
+                                className="form-control"
+                                placeholder={dadosApi ? "Plantacao" : "Carregado..."}
+                                disabled={dadosApi ? false : true}
+                                autoComplete="plantacao"
+                                onChange={(ev) => this.onChangeInput("plantacao", ev)}
+                            />
+                        </Col>
+                        <Col md={12} className="mt-4">
+                            <Link onClick={() => this.updateUser()} to="#">
+                                <SpinnerUp loading={loading} />
+                            </Link>
+                        </Col>
+                    </Row>        
 
-                    <FormGroup>
-                        <Label for="email">E-mail</Label>
-                        <Input type="email"
-                            value={name}
-                            name="email"
-                            id="email"
-                            className="form-control"
-                            placeholder={dadosApi ? "Melhor e-mail do usuário" : "Carregado..."}
-                            disabled={dadosApi ? false : true}
-                            autoComplete="email"
-                            onChange={(ev) => this.onChangeInput("email", ev)}
-                        />
-                    </FormGroup>
-
-                    <Link onClick={() => this.updateUser()} to="#">
-                        <SpinnerUp loading={loading} />
-                    </Link>
+                    
 
                 </Form>
             </>
@@ -239,7 +330,7 @@ class UpdateUser extends Component {
 }
 
 const mapStateToProps = state => ({
-    userDetails: state.user.userDetails
+    userDetails: state.user.userDetails,
 })
 
 export default connect(mapStateToProps, actions)(UpdateUser);

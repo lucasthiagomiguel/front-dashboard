@@ -5,7 +5,7 @@ const AlertDanger = (props) => {
 
     return(
         <div className="alert alert-danger">
-            {props.erros.message}
+            {props.erros}
         </div>
     )
 }
